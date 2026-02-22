@@ -1,0 +1,28 @@
+<% if (emails.length === 0) { %>
+  <div class="flex flex-col items-center justify-center py-20 text-gray-400">
+    <p class="text-sm font-medium">No emails yet</p>
+    <p class="text-xs mt-1">Emails sent via LocalStack SES will appear here</p>
+  </div>
+<% } else { %>
+  <% emails.forEach((email, i) => {
+    const from = email.Source || "Unknown sender";
+    const subject = (email.Subject && email.Subject.Data) || email.Subject || "(no subject)";
+    const timestamp = email.Timestamp ? new Date(email.Timestamp).toLocaleString() : "";
+    const bodyText = (email.Body && email.Body.text_part) || "";
+    const preview = bodyText ? bodyText.substring(0, 80) : "";
+  %>
+    <div
+      class="email-row px-4 py-3 cursor-pointer hover:bg-blue-50 transition-colors border-b border-gray-100 last:border-b-0"
+      onclick="selectEmail(<%= i %>)"
+    >
+      <div class="flex items-center justify-between gap-2 mb-0.5">
+        <span class="font-semibold text-sm text-gray-900 truncate"><%= from %></span>
+        <span class="text-xs text-gray-400 whitespace-nowrap shrink-0"><%= timestamp %></span>
+      </div>
+      <p class="text-sm text-gray-800 truncate"><%= subject %></p>
+      <% if (preview) { %>
+        <p class="text-xs text-gray-400 truncate mt-0.5"><%= preview %></p>
+      <% } %>
+    </div>
+  <% }) %>
+<% } %>

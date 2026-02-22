@@ -1,0 +1,14 @@
+services:
+  ses-viewer:
+    build: .
+    ports:
+      - "5050:5050"
+    environment:
+      - LOCALSTACK_URL=http://localstack:4566
+    networks:
+      - external-localstack
+
+networks:
+  external-localstack:
+    external: true
+    name: booking-be_booking-network

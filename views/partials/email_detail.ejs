@@ -1,0 +1,47 @@
+<% if (!email) { %>
+  <div class="flex flex-col items-center justify-center h-full text-gray-400">
+    <p class="text-lg">Select an email to read it</p>
+  </div>
+<% } else {
+  const from = email.Source || "Unknown sender";
+  const to = (email.Destination && email.Destination.ToAddresses) ? email.Destination.ToAddresses.join(", ") : "Unknown";
+  const subject = (email.Subject && email.Subject.Data) || email.Subject || "(no subject)";
+  const timestamp = email.Timestamp ? new Date(email.Timestamp).toLocaleString() : "";
+  const bodyText = (email.Body && email.Body.text_part) || "";
+  const bodyHtml = (email.Body && email.Body.html_part) || "";
+  const rawBody = email.RawData || "";
+%>
+  <div class="p-6">
+    <!-- Header fields -->
+    <div class="mb-6">
+      <h2 class="text-xl font-bold text-gray-900 mb-4"><%= subject %></h2>
+      <div class="text-sm text-gray-600 space-y-1">
+        <p><span class="font-medium text-gray-500 w-16 inline-block">From:</span> <%= from %></p>
+        <p><span class="font-medium text-gray-500 w-16 inline-block">To:</span> <%= to %></p>
+        <% if (timestamp) { %>
+          <p><span class="font-medium text-gray-500 w-16 inline-block">Date:</span> <%= timestamp %></p>
+        <% } %>
+      </div>
+    </div>
+
+    <hr class="border-gray-200 mb-6">
+
+    <!-- Body -->
+    <div class="prose prose-sm max-w-none">
+      <% if (bodyHtml) { %>
+        <iframe
+          srcdoc="<%- bodyHtml.replace(/"/g, '&quot;') %>"
+          class="w-full border-0 min-h-[300px]"
+          sandbox="allow-same-origin"
+          onload="this.style.height = this.contentDocument.body.scrollHeight + 'px';"
+        ></iframe>
+      <% } else if (bodyText) { %>
+        <pre class="whitespace-pre-wrap text-sm text-gray-700 font-sans"><%= bodyText %></pre>
+      <% } else if (rawBody) { %>
+        <pre class="whitespace-pre-wrap text-sm text-gray-700 font-mono"><%= rawBody %></pre>
+      <% } else { %>
+        <p class="text-gray-400 italic">No body content</p>
+      <% } %>
+    </div>
+  </div>
+<% } %>
